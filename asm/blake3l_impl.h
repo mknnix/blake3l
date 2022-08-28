@@ -1,5 +1,5 @@
-#ifndef BLAKE3_IMPL_H
-#define BLAKE3_IMPL_H
+#ifndef BLAKE3L_IMPL_H
+#define BLAKE3L_IMPL_H
 
 #include <assert.h>
 #include <stdbool.h>
@@ -7,7 +7,7 @@
 #include <stdint.h>
 #include <string.h>
 
-#include "blake3.h"
+#include "blake3l.h"
 
 // internal flags
 enum blake3_flags {
@@ -30,34 +30,34 @@ enum blake3_flags {
 
 #if defined(__x86_64__) || defined(_M_X64) 
 #define IS_X86
-#define IS_X86_64
+#define IS_X64
 #endif
 
 #if defined(__i386__) || defined(_M_IX86)
 #define IS_X86
-#define IS_X86_32
 #endif
 
 #if defined(__aarch64__) || defined(_M_ARM64)
-#define IS_AARCH64
+#define IS_ARM64
 #endif
 
-#if defined(IS_X86)
-#if defined(_MSC_VER)
-#include <intrin.h>
-#endif
+#if defined(IS_X64)
 #include <immintrin.h>
 #endif
 
-#if !defined(BLAKE3_USE_NEON) 
+#if defined(BLAKE3_USE_NEON) 
   // If BLAKE3_USE_NEON not manually set, autodetect based on AArch64ness
-  #if defined(IS_AARCH64)
+  #if defined(IS_ARM64) || defined(IS_X64)
     #define BLAKE3_USE_NEON 1
   #else
+    #warning No ARM/IA&AMD 32-bit please
     #define BLAKE3_USE_NEON 0
   #endif
+#else
+  #warning No NEON
 #endif
 
+/*
 #if defined(IS_X86)
 #define MAX_SIMD_DEGREE 16
 #elif BLAKE3_USE_NEON == 1
@@ -65,6 +65,7 @@ enum blake3_flags {
 #else
 #define MAX_SIMD_DEGREE 1
 #endif
+*/
 
 // There are some places where we want a static size that's equal to the
 // MAX_SIMD_DEGREE, but also at least 2.
@@ -193,34 +194,31 @@ void blake3_compress_in_place_portable(uint32_t cv[8],
                                        uint8_t block_len, uint64_t counter,
                                        uint8_t flags);
 
-#if defined(IS_X86)
-#error No X86 only Please
-#if !defined(BLAKE3_NO_SSE2)
+#if defined(IS_X86) && !defined(IS_X64)
+#warning No X86-only Please
 void blake3_compress_in_place_sse2(uint32_t cv[8],
                                    const uint8_t block[BLAKE3_BLOCK_LEN],
                                    uint8_t block_len, uint64_t counter,
                                    uint8_t flags);
-#endif
-#if !defined(BLAKE3_NO_SSE41)
+
 void blake3_compress_in_place_sse41(uint32_t cv[8],
                                     const uint8_t block[BLAKE3_BLOCK_LEN],
                                     uint8_t block_len, uint64_t counter,
-                                    uint8_t flags);
+				    uint8_t flags);
 #endif
-#if !defined(BLAKE3_NO_AVX2)
+
+#if defined(BLAKE3_NO_AVX512)
+#error no provide any without AVX512
 #endif
-#if !defined(BLAKE3_NO_AVX512)
+
 void blake3_compress_in_place_avx512(uint32_t cv[8],
                                      const uint8_t block[BLAKE3_BLOCK_LEN],
                                      uint8_t block_len, uint64_t counter,
                                      uint8_t flags);
-
-#endif
-#endif
 
 //TODO
 #if BLAKE3_USE_NEON == 1
 #endif
 
 
-#endif /* BLAKE3_IMPL_H */
+#endif /* BLAKE3L_IMPL_H */
