@@ -1,0 +1,13 @@
+[package]
+name = "blake3l"
+version = "0.0.0"
+edition = "2021"
+license = "GPL-3.0 OR LGPL-2.1"
+authors = ["Jack O'Connor <oconnor663@gmail.com>", "Samuel Neves", "mknnix"]
+description = "the BLAKE3-Lite hash function, just for hash function (math-like)"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+#assembler = "0.10.1"
+
