@@ -23,43 +23,53 @@ enum blake3_flags {
 // This C implementation tries to support recent versions of GCC, Clang, and
 // MSVC.
 #if defined(_MSC_VER)
-#define INLINE static __forceinline
+  #define INLINE static __forceinline
 #else
-#define INLINE static inline __attribute__((always_inline))
+  #define INLINE static inline __attribute__((always_inline))
 #endif
 
 #if defined(__x86_64__) || defined(_M_X64) 
-#define IS_X86
-#define IS_X64
+  #define IS_X86
+  #define IS_X64
 #endif
 
 #if defined(__i386__) || defined(_M_IX86)
-#define IS_X86
-#error Cannot provide 32-bit support
+  #define IS_X86
 #endif
 
 #if defined(__aarch64__) || defined(_M_ARM64)
-#define IS_ARM64
+  #define IS_ARM64
 #endif
 
 #if defined(IS_X64)
-#include <immintrin.h>
+  #ifdef _MSC_VER
+    #include <intrin.h>
+  #endif
+
+  #include <immintrin.h>
 #endif
 
+#if defined(IS_X64) || defined(IS_ARM64)
+  // no problem
+#else
+  #error Your CPU arch is unsupported. use official BLAKE3 instead this.
+#endif
 
 // autodetect based on AArch64ness
-#if defined(IS_ARM64)
-  #define BLAKE3_USE_NEON 1
-#else
-  #error Cannot privode ARM 32-bit support
+#ifndef IS_X64
+  #ifdef IS_ARM64
+    #define BLAKE3_USE_NEON 1
+  #else
+    #error Cannot provide ARM 32-bit support. please use official impl.
+  #endif
 #endif
 
-#if defined(IS_X86)
+#ifdef IS_X64
 #define MAX_SIMD_DEGREE 16
-#elif BLAKE3_USE_NEON == 1
+#elif defined(IS_ARM64)
 #define MAX_SIMD_DEGREE 4
 #else
-#define MAX_SIMD_DEGREE 1
+#error unexpected internal error
 #endif
 
 // There are some places where we want a static size that's equal to the
@@ -83,46 +93,36 @@ static const uint8_t MSG_SCHEDULE[7][16] = {
 /* Find index of the highest set bit */
 /* x is assumed to be nonzero.       */
 static unsigned int highest_one(uint64_t x) {
-#if defined(__GNUC__) || defined(__clang__)
-  return 63 ^ __builtin_clzll(x);
-#elif defined(_MSC_VER) && defined(IS_X86_64)
-  unsigned long index;
-  _BitScanReverse64(&index, x);
-  return index;
-#elif defined(_MSC_VER) && defined(IS_X86_32)
-  if(x >> 32) {
+  #if defined(__GNUC__) || defined(__clang__)
+    return 63 ^ __builtin_clzll(x);
+  #elif defined(_MSC_VER) && defined(IS_X64)
     unsigned long index;
-    _BitScanReverse(&index, (unsigned long)(x >> 32));
-    return 32 + index;
-  } else {
-    unsigned long index;
-    _BitScanReverse(&index, (unsigned long)x);
+    _BitScanReverse64(&index, x);
     return index;
-  }
-#else
-  unsigned int c = 0;
-  if(x & 0xffffffff00000000ULL) { x >>= 32; c += 32; }
-  if(x & 0x00000000ffff0000ULL) { x >>= 16; c += 16; }
-  if(x & 0x000000000000ff00ULL) { x >>=  8; c +=  8; }
-  if(x & 0x00000000000000f0ULL) { x >>=  4; c +=  4; }
-  if(x & 0x000000000000000cULL) { x >>=  2; c +=  2; }
-  if(x & 0x0000000000000002ULL) {           c +=  1; }
-  return c;
-#endif
+  #else
+    unsigned int c = 0;
+    if(x & 0xffffffff00000000ULL) { x >>= 32; c += 32; }
+    if(x & 0x00000000ffff0000ULL) { x >>= 16; c += 16; }
+    if(x & 0x000000000000ff00ULL) { x >>=  8; c +=  8; }
+    if(x & 0x00000000000000f0ULL) { x >>=  4; c +=  4; }
+    if(x & 0x000000000000000cULL) { x >>=  2; c +=  2; }
+    if(x & 0x0000000000000002ULL) {           c +=  1; }
+    return c;
+  #endif
 }
 
 // Count the number of 1 bits.
 INLINE unsigned int popcnt(uint64_t x) {
-#if defined(__GNUC__) || defined(__clang__)
-  return __builtin_popcountll(x);
-#else
-  unsigned int count = 0;
-  while (x != 0) {
-    count += 1;
-    x &= x - 1;
-  }
-  return count;
-#endif
+  #if defined(__GNUC__) || defined(__clang__)
+    return __builtin_popcountll(x);
+  #else
+    unsigned int count = 0;
+    while (x != 0) {
+      count += 1;
+      x &= x - 1;
+    }
+    return count;
+  #endif
 }
 
 // Largest power of two less than or equal to x. As a special case, returns 1
@@ -179,9 +179,7 @@ void blake3_compress_in_place(uint32_t cv[8],
                               uint8_t block_len, uint64_t counter,
                               uint8_t flags);
 
-
 size_t blake3_simd_degree(void);
-
 
 // Declarations for implementation-specific functions.
 void blake3_compress_in_place_portable(uint32_t cv[8],
@@ -189,7 +187,7 @@ void blake3_compress_in_place_portable(uint32_t cv[8],
                                        uint8_t block_len, uint64_t counter,
                                        uint8_t flags);
 
-#if defined(IS_X64)
+#ifdef IS_X64
 void blake3_compress_in_place_sse2(uint32_t cv[8],
                                    const uint8_t block[BLAKE3_BLOCK_LEN],
                                    uint8_t block_len, uint64_t counter,
@@ -201,18 +199,19 @@ void blake3_compress_in_place_sse41(uint32_t cv[8],
 				    uint8_t flags);
 #endif
 
-#if !defined(BLAKE3_NO_AVX512)
-void blake3_compress_in_place_avx512(uint32_t cv[8],
+#ifndef BLAKE3_NO_AVX512
+  void blake3_compress_in_place_avx512(uint32_t cv[8],
                                      const uint8_t block[BLAKE3_BLOCK_LEN],
                                      uint8_t block_len, uint64_t counter,
                                      uint8_t flags);
 #else
-
-#endif
-
-//TODO
-#if BLAKE3_USE_NEON == 1
+/*  void blake3_hash_many_avx2(const uint8_t *const *inputs, size_t num_inputs,
+                           size_t blocks, const uint32_t key[8],
+                           uint64_t counter, bool increment_counter,
+                           uint8_t flags, uint8_t flags_start,
+                           uint8_t flags_end, uint8_t *out); */
 #endif
 
 
 #endif /* BLAKE3L_IMPL_H */
+
