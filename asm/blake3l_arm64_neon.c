@@ -295,11 +295,11 @@ void blake3_hash4_neon(const uint8_t *const *inputs, size_t blocks,
  * ----------------------------------------------------------------------------
  */
 
-void blake3_compress_in_place_portable(uint32_t cv[8],
+void blake3l_neon(uint32_t cv[8],
                                        const uint8_t block[BLAKE3_BLOCK_LEN],
                                        uint8_t block_len, uint64_t counter,
                                        uint8_t flags);
-
+/*
 INLINE void hash_one_neon(const uint8_t *input, size_t blocks,
                           const uint32_t key[8], uint64_t counter,
                           uint8_t flags, uint8_t flags_start, uint8_t flags_end,
@@ -322,30 +322,5 @@ INLINE void hash_one_neon(const uint8_t *input, size_t blocks,
   }
   memcpy(out, cv, BLAKE3_OUT_LEN);
 }
+*/
 
-void blake3_hash_many_neon(const uint8_t *const *inputs, size_t num_inputs,
-                           size_t blocks, const uint32_t key[8],
-                           uint64_t counter, bool increment_counter,
-                           uint8_t flags, uint8_t flags_start,
-                           uint8_t flags_end, uint8_t *out) {
-  while (num_inputs >= 4) {
-    blake3_hash4_neon(inputs, blocks, key, counter, increment_counter, flags,
-                      flags_start, flags_end, out);
-    if (increment_counter) {
-      counter += 4;
-    }
-    inputs += 4;
-    num_inputs -= 4;
-    out = &out[4 * BLAKE3_OUT_LEN];
-  }
-  while (num_inputs > 0) {
-    hash_one_neon(inputs[0], blocks, key, counter, flags, flags_start,
-                  flags_end, out);
-    if (increment_counter) {
-      counter += 1;
-    }
-    inputs += 1;
-    num_inputs -= 1;
-    out = &out[BLAKE3_OUT_LEN];
-  }
-}

@@ -227,8 +227,7 @@ INLINE void load_counters(uint64_t counter, bool increment_counter,
   *out_hi = h;
 }
 
-static
-void blake3_hash8_avx2(const uint8_t *const *inputs, size_t blocks,
+static void blake3_hash8_avx2(const uint8_t *const *inputs, size_t blocks,
                        const uint32_t key[8], uint64_t counter,
                        bool increment_counter, uint8_t flags,
                        uint8_t flags_start, uint8_t flags_end, uint8_t *out) {

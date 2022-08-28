@@ -9,7 +9,7 @@ extern "C" {
 #endif
 
 #define BLAKE3_VERSION_STRING "0.1.0"
-//#define BLAKE3_KEY_LEN 32
+#define BLAKE3_KEY_LEN 32
 #define BLAKE3_OUT_LEN 32
 #define BLAKE3_BLOCK_LEN 64
 #define BLAKE3_CHUNK_LEN 1024

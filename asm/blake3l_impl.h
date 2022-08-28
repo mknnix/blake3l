@@ -35,6 +35,7 @@ enum blake3_flags {
 
 #if defined(__i386__) || defined(_M_IX86)
 #define IS_X86
+#error Cannot provide 32-bit support
 #endif
 
 #if defined(__aarch64__) || defined(_M_ARM64)
@@ -45,16 +46,14 @@ enum blake3_flags {
 #include <immintrin.h>
 #endif
 
-#if defined(BLAKE3_USE_NEON) 
-  // If BLAKE3_USE_NEON not manually set, autodetect based on AArch64ness
-  #if defined(IS_ARM64)
-    #define BLAKE3_USE_NEON 1
-  #else
-    #error No ARM 32-bit please
-  #endif
+
+// autodetect based on AArch64ness
+#if defined(IS_ARM64)
+  #define BLAKE3_USE_NEON 1
+#else
+  #error Cannot privode ARM 32-bit support
 #endif
 
-/*
 #if defined(IS_X86)
 #define MAX_SIMD_DEGREE 16
 #elif BLAKE3_USE_NEON == 1
@@ -62,7 +61,6 @@ enum blake3_flags {
 #else
 #define MAX_SIMD_DEGREE 1
 #endif
-*/
 
 // There are some places where we want a static size that's equal to the
 // MAX_SIMD_DEGREE, but also at least 2.
@@ -191,8 +189,7 @@ void blake3_compress_in_place_portable(uint32_t cv[8],
                                        uint8_t block_len, uint64_t counter,
                                        uint8_t flags);
 
-#if defined(IS_X86) && !defined(IS_X64)
-#warning No X86-only Please
+#if defined(IS_X64)
 void blake3_compress_in_place_sse2(uint32_t cv[8],
                                    const uint8_t block[BLAKE3_BLOCK_LEN],
                                    uint8_t block_len, uint64_t counter,
@@ -204,14 +201,14 @@ void blake3_compress_in_place_sse41(uint32_t cv[8],
 				    uint8_t flags);
 #endif
 
-#if defined(BLAKE3_NO_AVX512)
-#error no provide any without AVX512
-#endif
-
+#if !defined(BLAKE3_NO_AVX512)
 void blake3_compress_in_place_avx512(uint32_t cv[8],
                                      const uint8_t block[BLAKE3_BLOCK_LEN],
                                      uint8_t block_len, uint64_t counter,
                                      uint8_t flags);
+#else
+
+#endif
 
 //TODO
 #if BLAKE3_USE_NEON == 1
