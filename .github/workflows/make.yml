@@ -1,0 +1,47 @@
+name: Make Static Library
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  amd64-docker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Create binary directory for this job
+        run: |
+          echo TODO
+
+  amd64-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Create binary directory for this job
+        run: |
+          cd c/asm/
+          make asm_x64 || make lib_avx2_sse41
+          ls -hl
+          file blake3l_x64_avx2.o
+          readelf -a blake3l_x64_avx2.o
+
+  amd64-mac:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Create binary directory for this job
+        run: |
+          cd c/asm/
+          make asm_x64 || make lib_avx2_sse41
+          ls -hl
+          file blake3l_x64_avx2.o
+          readelf -a blake3l_x64_avx2.o
+

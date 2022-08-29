@@ -1,6 +1,6 @@
 NAME=blake3l
 CC=gcc
-CFLAGS=-O3 -Wall -Wextra -nostdlib -fno-pie -static #-pedantic -fstack-protector-strong -D_FORTIFY_SOURCE=2 -fvisibility=hidden
+CFLAGS=-O3 -Wall -Wextra -nostdlib -fno-pie -static -pedantic -fstack-protector-strong -D_FORTIFY_SOURCE=2
 LDFLAGS=-no-pie -Wl,-z,relro,-z,now
 EXTRAFLAGS=-Wa,--noexecstack
 
@@ -30,9 +30,6 @@ asm_sse41:
 asm_arm64:
 	$(CC) $(CFLAGS) $(EXTRAFLAGS) ../$(NEON).c -o ./$(NEON).s -S
 
-obj_avx2_sse41:
-	$(CC) $(CFLAGS) $(EXTRAFLAGS) ./$(SSE2).s ./$(SSE41).s ../$(AVX2).c -o ./lib$(AVX2).out -mavx2 -msse2 -msse4.1 -r
-
-#obj_avx2_sse2:
-#	$(CC) $(CFLAGS) $(EXTRAFLAGS) ./$(SSE2).s ../$(AVX2).c -o ./$(AVX2).out -mavx2 -msse2 -mno-sse4.1 -pie
+lib_avx2_sse41:
+	$(CC) $(CFLAGS) $(EXTRAFLAGS) ./$(SSE2).s ./$(SSE41).s ../$(AVX2).c -o ./$(AVX2).o -mavx2 -msse2 -msse4.1 -r
 
