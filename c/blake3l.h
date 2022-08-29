@@ -4,19 +4,14 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-#define BLAKE3_VERSION_STRING "0.1.0"
+#define BLAKE3_VERSION_STRING "0.0.2"
 #define BLAKE3_KEY_LEN 32
 #define BLAKE3_OUT_LEN 32
 #define BLAKE3_BLOCK_LEN 64
 #define BLAKE3_CHUNK_LEN 1024
 #define BLAKE3_MAX_DEPTH 54
 
-// This struct is a private implementation detail. It has to be here because
-// it's part of blake3_hasher below.
+// This struct is a public implementation detail. It has to be here because the blake3_hasher has been removed.
 typedef struct {
   uint32_t cv[8];
   uint64_t chunk_counter;
@@ -26,6 +21,7 @@ typedef struct {
   uint8_t flags;
 } blake3_chunk_state;
 
+/*
 typedef struct {
   uint32_t key[8];
   blake3_chunk_state chunk;
@@ -37,13 +33,10 @@ typedef struct {
   // reference implementation does things.
   uint8_t cv_stack[(BLAKE3_MAX_DEPTH + 1) * BLAKE3_OUT_LEN];
 } blake3_hasher;
+*/
 
 const char *blake3_version(void);
-void blake3_hasher_hash(blake3_hasher *self, const void *input,
-                          size_t input_len);
-
-#ifdef __cplusplus
-}
-#endif
+void blake3_hash(const void *input, unsigned short input_len);
 
 #endif /* BLAKE3L_H */
+

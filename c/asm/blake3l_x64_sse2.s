@@ -2,10 +2,9 @@
 	.text
 	.p2align 4,,15
 	.globl	blake3_compress_in_place_sse2
-	.hidden	blake3_compress_in_place_sse2
 	.type	blake3_compress_in_place_sse2, @function
 blake3_compress_in_place_sse2:
-.LFB4792:
+.LFB4776:
 	.cfi_startproc
 	movq	%rcx, %rax
 	movdqu	(%rsi), %xmm3
@@ -582,14 +581,13 @@ blake3_compress_in_place_sse2:
 	movups	%xmm2, 16(%rdi)
 	ret
 	.cfi_endproc
-.LFE4792:
+.LFE4776:
 	.size	blake3_compress_in_place_sse2, .-blake3_compress_in_place_sse2
 	.p2align 4,,15
 	.globl	blake3_compress_xof_sse2
-	.hidden	blake3_compress_xof_sse2
 	.type	blake3_compress_xof_sse2, @function
 blake3_compress_xof_sse2:
-.LFB4793:
+.LFB4777:
 	.cfi_startproc
 	movq	%rcx, %rax
 	movdqu	(%rsi), %xmm3
@@ -1172,14 +1170,13 @@ blake3_compress_xof_sse2:
 	movups	%xmm1, 48(%r9)
 	ret
 	.cfi_endproc
-.LFE4793:
+.LFE4777:
 	.size	blake3_compress_xof_sse2, .-blake3_compress_xof_sse2
 	.p2align 4,,15
 	.globl	blake3_hash_many_sse2
-	.hidden	blake3_hash_many_sse2
 	.type	blake3_hash_many_sse2, @function
 blake3_hash_many_sse2:
-.LFB4800:
+.LFB4784:
 	.cfi_startproc
 	pushq	%r15
 	.cfi_def_cfa_offset 16
@@ -1204,22 +1201,19 @@ blake3_hash_many_sse2:
 	movq	%rdi, %r12
 	movq	%rsi, %rax
 	movq	%r8, %rbx
-	subq	$472, %rsp
-	.cfi_def_cfa_offset 528
-	movzbl	544(%rsp), %edx
-	movl	528(%rsp), %edi
-	movl	536(%rsp), %ecx
-	movq	%rsi, 368(%rsp)
-	movq	552(%rsp), %r13
-	movb	%r9b, 382(%rsp)
-	movl	%edi, 392(%rsp)
-	movl	%edi, %ebp
-	movb	%dl, 383(%rsp)
-	movl	%ecx, 396(%rsp)
-	movq	%fs:40, %rdx
-	movq	%rdx, 456(%rsp)
-	xorl	%edx, %edx
+	subq	$456, %rsp
+	.cfi_def_cfa_offset 512
 	cmpq	$3, %rsi
+	movzbl	528(%rsp), %edx
+	movl	512(%rsp), %edi
+	movl	520(%rsp), %ecx
+	movq	%rsi, 376(%rsp)
+	movq	536(%rsp), %r13
+	movb	%r9b, 390(%rsp)
+	movl	%edi, 400(%rsp)
+	movl	%edi, %ebp
+	movl	%ecx, 404(%rsp)
+	movb	%dl, 391(%rsp)
 	jbe	.L5
 	movl	%r9d, %esi
 	movzbl	%r9b, %r9d
@@ -1231,13 +1225,12 @@ blake3_hash_many_sse2:
 	movq	%r12, %r14
 	movq	%r13, %r9
 	movd	(%rsp), %xmm4
-	movq	%rdi, 384(%rsp)
+	movq	%rdi, 392(%rsp)
 	andl	$3, %edi
-	movq	%r12, 400(%rsp)
-	movq	%r13, 408(%rsp)
+	movq	%r12, 408(%rsp)
+	movb	%dl, 389(%rsp)
 	movq	%rax, %r15
 	pshufd	$0, %xmm4, %xmm0
-	movb	%dl, 381(%rsp)
 	movq	%rdi, %r12
 	movl	%esi, %r13d
 	pand	.LC4(%rip), %xmm0
@@ -1258,11 +1251,11 @@ blake3_hash_many_sse2:
 	movd	4(%r11), %xmm4
 	pshufd	$0, %xmm4, %xmm4
 	movdqa	%xmm4, %xmm10
-	movdqa	%xmm4, %xmm6
+	movdqa	%xmm4, %xmm2
 	movd	8(%r11), %xmm4
 	pshufd	$0, %xmm4, %xmm4
 	movdqa	%xmm4, %xmm9
-	movdqa	%xmm4, %xmm2
+	movdqa	%xmm4, %xmm6
 	movd	12(%r11), %xmm4
 	pshufd	$0, %xmm4, %xmm4
 	movdqa	%xmm4, %xmm7
@@ -1292,7 +1285,7 @@ blake3_hash_many_sse2:
 	psubd	%xmm4, %xmm1
 	je	.L6
 	movq	(%r14), %rax
-	movzbl	381(%rsp), %edi
+	movzbl	389(%rsp), %edi
 	xorl	%r8d, %r8d
 	movaps	%xmm1, 320(%rsp)
 	leaq	256(%rax), %rsi
@@ -1307,7 +1300,7 @@ blake3_hash_many_sse2:
 .L8:
 	addq	$1, %r8
 	cmpq	%r8, %r10
-	je	.L35
+	je	.L34
 .L7:
 	movdqu	-256(%rsi), %xmm1
 	prefetcht0	(%rsi)
@@ -2982,33 +2975,33 @@ blake3_hash_many_sse2:
 	pxor	%xmm6, %xmm5
 	jne	.L8
 	movdqa	%xmm11, %xmm3
-	movdqa	%xmm9, %xmm2
-	movdqa	%xmm10, %xmm6
+	movdqa	%xmm10, %xmm2
+	movdqa	%xmm9, %xmm6
 	movdqa	%xmm8, %xmm14
 .L6:
 	movdqa	%xmm3, %xmm1
-	movdqa	%xmm2, %xmm0
-	movdqa	%xmm3, %xmm10
+	movdqa	%xmm6, %xmm0
+	movdqa	%xmm6, %xmm8
 	leaq	4(%rbx), %rax
-	punpckldq	%xmm6, %xmm1
+	punpckldq	%xmm2, %xmm1
 	testb	%r13b, %r13b
 	punpckldq	%xmm7, %xmm0
 	cmovne	%rax, %rbx
-	punpckhdq	%xmm6, %xmm10
+	movdqa	272(%rsp), %xmm6
 	subq	$4, %r15
 	movdqa	%xmm1, %xmm4
 	addq	$32, %r14
-	movdqa	272(%rsp), %xmm6
-	subq	$-128, %r9
-	movdqa	%xmm2, %xmm8
-	punpcklqdq	%xmm0, %xmm4
-	movdqa	%xmm5, %xmm3
 	punpckhqdq	%xmm0, %xmm1
+	subq	$-128, %r9
+	punpcklqdq	%xmm0, %xmm4
 	movdqa	%xmm5, %xmm0
 	punpckhdq	%xmm7, %xmm8
-	movdqa	%xmm6, %xmm5
+	movdqa	%xmm3, %xmm10
 	punpckldq	%xmm14, %xmm0
+	movdqa	%xmm5, %xmm3
 	movdqa	256(%rsp), %xmm7
+	movdqa	%xmm6, %xmm5
+	punpckhdq	%xmm2, %xmm10
 	punpckhdq	%xmm14, %xmm3
 	punpckldq	%xmm7, %xmm5
 	movdqa	%xmm6, %xmm15
@@ -3032,25 +3025,25 @@ blake3_hash_many_sse2:
 	movups	%xmm3, -16(%r9)
 	cmpq	%r12, %r15
 	jne	.L10
-	movq	384(%rsp), %rax
-	movq	408(%rsp), %r13
-	movq	400(%rsp), %r12
-	andq	$3, 368(%rsp)
+	movq	392(%rsp), %rax
+	movq	536(%rsp), %r13
+	movq	408(%rsp), %r12
+	andq	$3, 376(%rsp)
 	shrq	$2, %rax
 	addq	$1, %rax
 	movq	%rax, %rdx
 	salq	$7, %rax
 	addq	%rax, %r13
-	movq	368(%rsp), %rax
+	movq	376(%rsp), %rax
 	salq	$5, %rdx
 	addq	%rdx, %r12
 .L5:
 	testq	%rax, %rax
 	je	.L4
-	movzbl	396(%rsp), %edi
-	movzbl	383(%rsp), %r15d
+	movzbl	404(%rsp), %edi
+	movzbl	391(%rsp), %r15d
 	leaq	(%r12,%rax,8), %r14
-	orb	392(%rsp), %dil
+	orb	400(%rsp), %dil
 	movq	%r14, (%rsp)
 	movb	%dil, 16(%rsp)
 .L16:
@@ -3064,7 +3057,7 @@ blake3_hash_many_sse2:
 	movq	%r10, %r14
 	cmpq	$1, %r14
 	movzbl	16(%rsp), %r8d
-	je	.L36
+	je	.L35
 	.p2align 4,,10
 	.p2align 3
 .L13:
@@ -3078,7 +3071,7 @@ blake3_hash_many_sse2:
 	cmpq	$1, %r14
 	movzbl	%bpl, %r8d
 	jne	.L13
-.L36:
+.L35:
 	orl	%r15d, %r8d
 	leaq	416(%rsp), %rdi
 	movq	%rbx, %rcx
@@ -3088,7 +3081,7 @@ blake3_hash_many_sse2:
 	call	blake3_compress_in_place_sse2
 .L12:
 	movdqa	416(%rsp), %xmm0
-	cmpb	$1, 382(%rsp)
+	cmpb	$1, 390(%rsp)
 	movups	%xmm0, 0(%r13)
 	sbbq	$-1, %rbx
 	addq	$8, %r12
@@ -3098,10 +3091,7 @@ blake3_hash_many_sse2:
 	cmpq	(%rsp), %r12
 	jne	.L16
 .L4:
-	movq	456(%rsp), %rax
-	xorq	%fs:40, %rax
-	jne	.L37
-	addq	$472, %rsp
+	addq	$456, %rsp
 	.cfi_remember_state
 	.cfi_def_cfa_offset 56
 	popq	%rbx
@@ -3119,14 +3109,12 @@ blake3_hash_many_sse2:
 	ret
 	.p2align 4,,10
 	.p2align 3
-.L35:
+.L34:
 	.cfi_restore_state
-	orb	383(%rsp), %dil
+	orb	391(%rsp), %dil
 	jmp	.L7
-.L37:
-	call	__stack_chk_fail
 	.cfi_endproc
-.LFE4800:
+.LFE4784:
 	.size	blake3_hash_many_sse2, .-blake3_hash_many_sse2
 	.section	.rodata.cst16,"aM",@progbits,16
 	.align 16
