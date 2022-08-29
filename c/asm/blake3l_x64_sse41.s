@@ -4,7 +4,7 @@
 	.globl	blake3_compress_in_place_sse41
 	.type	blake3_compress_in_place_sse41, @function
 blake3_compress_in_place_sse41:
-.LFB4775:
+.LFB4791:
 	.cfi_startproc
 	movzbl	%dl, %edx
 	movq	%rcx, %rax
@@ -461,13 +461,13 @@ blake3_compress_in_place_sse41:
 	movups	%xmm0, 16(%rdi)
 	ret
 	.cfi_endproc
-.LFE4775:
+.LFE4791:
 	.size	blake3_compress_in_place_sse41, .-blake3_compress_in_place_sse41
 	.p2align 4,,15
 	.globl	blake3_compress_xof_sse41
 	.type	blake3_compress_xof_sse41, @function
 blake3_compress_xof_sse41:
-.LFB4776:
+.LFB4792:
 	.cfi_startproc
 	movzbl	%dl, %edx
 	movq	%rcx, %rax
@@ -931,13 +931,13 @@ blake3_compress_xof_sse41:
 	movups	%xmm5, 48(%r9)
 	ret
 	.cfi_endproc
-.LFE4776:
+.LFE4792:
 	.size	blake3_compress_xof_sse41, .-blake3_compress_xof_sse41
 	.p2align 4,,15
 	.globl	blake3_hash_many_sse41
 	.type	blake3_hash_many_sse41, @function
 blake3_hash_many_sse41:
-.LFB4783:
+.LFB4799:
 	.cfi_startproc
 	pushq	%r15
 	.cfi_def_cfa_offset 16
@@ -962,19 +962,22 @@ blake3_hash_many_sse41:
 	movq	%rdi, %r12
 	movq	%rsi, %rax
 	movq	%r8, %rbx
-	subq	$520, %rsp
-	.cfi_def_cfa_offset 576
-	cmpq	$3, %rsi
-	movzbl	592(%rsp), %edx
-	movl	576(%rsp), %edi
-	movl	584(%rsp), %ecx
-	movq	%rsi, 440(%rsp)
-	movq	600(%rsp), %r13
-	movb	%r9b, 454(%rsp)
-	movl	%edi, 464(%rsp)
+	subq	$536, %rsp
+	.cfi_def_cfa_offset 592
+	movzbl	608(%rsp), %edx
+	movl	592(%rsp), %edi
+	movl	600(%rsp), %ecx
+	movq	%rsi, 432(%rsp)
+	movq	616(%rsp), %r13
+	movb	%r9b, 446(%rsp)
+	movl	%edi, 456(%rsp)
 	movl	%edi, %ebp
-	movl	%ecx, 468(%rsp)
-	movb	%dl, 455(%rsp)
+	movb	%dl, 447(%rsp)
+	movl	%ecx, 460(%rsp)
+	movq	%fs:40, %rdx
+	movq	%rdx, 520(%rsp)
+	xorl	%edx, %edx
+	cmpq	$3, %rsi
 	jbe	.L5
 	movl	%r9d, %esi
 	movzbl	%r9b, %r9d
@@ -986,15 +989,16 @@ blake3_hash_many_sse41:
 	movq	%r12, %r14
 	movq	%r13, %r9
 	movd	(%rsp), %xmm6
-	movq	%rdi, 456(%rsp)
+	movq	%rdi, 448(%rsp)
 	andl	$3, %edi
 	movdqa	.LC0(%rip), %xmm8
 	movq	%rax, %r15
 	pshufd	$0, %xmm6, %xmm0
-	movq	%r12, 472(%rsp)
+	movq	%r12, 464(%rsp)
 	movdqa	.LC2(%rip), %xmm6
 	movq	%rdi, %r12
-	movb	%dl, 453(%rsp)
+	movq	%r13, 472(%rsp)
+	movb	%dl, 445(%rsp)
 	movl	%esi, %r13d
 	pand	.LC3(%rip), %xmm0
 	movaps	%xmm0, 400(%rsp)
@@ -1047,7 +1051,7 @@ blake3_hash_many_sse41:
 	psubd	%xmm7, %xmm1
 	je	.L6
 	movq	(%r14), %rax
-	movzbl	453(%rsp), %edi
+	movzbl	445(%rsp), %edi
 	xorl	%r8d, %r8d
 	movaps	%xmm1, 384(%rsp)
 	movdqa	%xmm4, %xmm1
@@ -1063,7 +1067,7 @@ blake3_hash_many_sse41:
 .L8:
 	addq	$1, %r8
 	cmpq	%r8, %r10
-	je	.L34
+	je	.L35
 .L7:
 	movdqu	-256(%rsi), %xmm0
 	prefetcht0	(%rsi)
@@ -2623,25 +2627,25 @@ blake3_hash_many_sse41:
 	movups	%xmm4, -16(%r9)
 	cmpq	%r12, %r15
 	jne	.L10
-	movq	456(%rsp), %rax
-	movq	600(%rsp), %r13
-	movq	472(%rsp), %r12
-	andq	$3, 440(%rsp)
+	movq	448(%rsp), %rax
+	movq	472(%rsp), %r13
+	movq	464(%rsp), %r12
+	andq	$3, 432(%rsp)
 	shrq	$2, %rax
 	addq	$1, %rax
 	movq	%rax, %rdx
 	salq	$7, %rax
 	addq	%rax, %r13
-	movq	440(%rsp), %rax
+	movq	432(%rsp), %rax
 	salq	$5, %rdx
 	addq	%rdx, %r12
 .L5:
 	testq	%rax, %rax
 	je	.L4
-	movzbl	468(%rsp), %edi
-	movzbl	455(%rsp), %r15d
+	movzbl	460(%rsp), %edi
+	movzbl	447(%rsp), %r15d
 	leaq	(%r12,%rax,8), %r14
-	orb	464(%rsp), %dil
+	orb	456(%rsp), %dil
 	movq	%r14, (%rsp)
 	movb	%dil, 16(%rsp)
 .L16:
@@ -2655,7 +2659,7 @@ blake3_hash_many_sse41:
 	movq	%r10, %r14
 	cmpq	$1, %r14
 	movzbl	16(%rsp), %r8d
-	je	.L35
+	je	.L36
 	.p2align 4,,10
 	.p2align 3
 .L13:
@@ -2669,7 +2673,7 @@ blake3_hash_many_sse41:
 	cmpq	$1, %r14
 	movzbl	%bpl, %r8d
 	jne	.L13
-.L35:
+.L36:
 	orl	%r15d, %r8d
 	leaq	480(%rsp), %rdi
 	movq	%rbx, %rcx
@@ -2679,7 +2683,7 @@ blake3_hash_many_sse41:
 	call	blake3_compress_in_place_sse41
 .L12:
 	movdqa	480(%rsp), %xmm0
-	cmpb	$1, 454(%rsp)
+	cmpb	$1, 446(%rsp)
 	movups	%xmm0, 0(%r13)
 	sbbq	$-1, %rbx
 	addq	$8, %r12
@@ -2689,7 +2693,10 @@ blake3_hash_many_sse41:
 	cmpq	(%rsp), %r12
 	jne	.L16
 .L4:
-	addq	$520, %rsp
+	movq	520(%rsp), %rax
+	xorq	%fs:40, %rax
+	jne	.L37
+	addq	$536, %rsp
 	.cfi_remember_state
 	.cfi_def_cfa_offset 56
 	popq	%rbx
@@ -2707,12 +2714,14 @@ blake3_hash_many_sse41:
 	ret
 	.p2align 4,,10
 	.p2align 3
-.L34:
+.L35:
 	.cfi_restore_state
-	orb	455(%rsp), %dil
+	orb	447(%rsp), %dil
 	jmp	.L7
+.L37:
+	call	__stack_chk_fail
 	.cfi_endproc
-.LFE4783:
+.LFE4799:
 	.size	blake3_hash_many_sse41, .-blake3_hash_many_sse41
 	.section	.rodata.cst16,"aM",@progbits,16
 	.align 16
