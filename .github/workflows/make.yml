@@ -31,6 +31,8 @@ jobs:
           ls -hl
           file blake3l_x64_avx2.o
           readelf -a blake3l_x64_avx2.o
+          objdump -x blake3l_x64_avx2.o
+          xxd blake3l_x64_avx2.o
 
   amd64-mac:
     runs-on: macos-latest
@@ -40,8 +42,8 @@ jobs:
       - name: Create binary directory for this job
         run: |
           cd c/asm/
-          make asm_x64 || make lib_avx2_sse41
+          make asm_x64 ; make lib_avx2_sse41
           ls -hl
           file blake3l_x64_avx2.o
-          readelf -a blake3l_x64_avx2.o
-
+          objdump -x blake3l_x64_avx2.o
+          xxd blake3l_x64_avx2.o
