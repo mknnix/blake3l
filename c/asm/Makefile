@@ -31,5 +31,8 @@ asm_arm64:
 	$(CC) $(CFLAGS) $(EXTRAFLAGS) ../$(NEON).c -o ./$(NEON).s -S
 
 obj_avx2_sse41:
-	$(CC) $(CFLAGS) $(EXTRAFLAGS) ./$(SSE41).s ../$(AVX2).c -o ./$(AVX2).out -mavx2
+	$(CC) $(CFLAGS) $(EXTRAFLAGS) ./$(SSE2).s ./$(SSE41).s ../$(AVX2).c -o ./$(AVX2).out -mavx2 -msse2 -msse4.1
+
+obj_avx2_sse2:
+	$(CC) $(CFLAGS) $(EXTRAFLAGS) ./$(SSE2).s ../$(AVX2).c -o ./$(AVX2).out -mavx2 -msse2 -mno-sse2
 
